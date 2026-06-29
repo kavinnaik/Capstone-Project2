@@ -16,6 +16,14 @@ resource "aws_s3_bucket_website_configuration" "website" {
   }
 }
 
+resource "aws_s3_bucket_versioning" "website" {
+  bucket = aws_s3_bucket.website.id
+
+  versioning_configuration {
+    status = "Enabled"
+  }
+}
+
 resource "aws_s3_bucket_public_access_block" "website" {
   bucket = aws_s3_bucket.website.id
 
@@ -47,16 +55,16 @@ resource "aws_s3_bucket_policy" "https_only" {
         Effect    = "Deny"
         Principal = "*"
         Action    = "s3:*"
-        Resource  = [
+        Resource = [
           aws_s3_bucket.website.arn,
           "${aws_s3_bucket.website.arn}/*"
         ]
         Condition = {
           Bool = {
             "aws:SecureTransport" = "false"
-          }  
+          }
         }
-      }          
+      }
     ]
   })
 }
